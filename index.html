@@ -643,33 +643,26 @@ function renderArmorGrid(list){
       vis.style.background = colorMap[item.rarity] || '#ddd';
       vis.style.boxShadow = 'inset 0 0 0 2px rgba(0,0,0,0.06)';
 
-      // 如果是光明甲（armor_red_1），放入 img 占位（自动尝试相对路径 + GitHub repo 路径）
+      // 如果是光明甲（armor_red_1），放入 img 占位（使用正确的相对路径）
       if(item.id === 'armor_red_1'){
         const img = document.createElement('img');
         img.className = 'market-img';
         img.alt = '光明甲';
 
-        // 尝试路径数组（优先相对路径，失败后尝试仓库路径 /fastnight/assets/guangming.svg）
-        const candidates = [
-          'assets/guangming.svg',
-          './assets/guangming.svg',
-          '/fastnight/assets/guangming.svg',
-          (location.origin ? (location.origin + '/fastnight/assets/guangming.svg') : '/fastnight/assets/guangming.svg')
-        ];
-
-        // 递归尝试直到某个路径加载成功
-        function trySetSrc(arr, idx){
-          if(idx >= arr.length){
-            console.warn('guangming.svg 加载失败，尝试的路径：', arr);
-            return;
-          }
-          // 加个时间戳避免缓存问题
-          const src = arr[idx] + '?_=' + Math.floor(Date.now()/1000);
-          img.onload = function(){ /* 成功，什么也不做 */ };
-          img.onerror = function(){ trySetSrc(arr, idx+1); };
-          img.src = src;
-        }
-        trySetSrc(candidates, 0);
+        // 正确的（也最常用）路径：相对于 index.html 的相对路径
+        const primary = 'assets/guangming.svg';
+        img.src = primary;
+        // 失败时显示提示并尝试备用路径
+        img.onerror = function(){
+          console.warn('assets/guangming.svg 加载失败，尝试备用路径 /fastnight/assets/guangming.svg');
+          // 备用尝试（当你以某些特殊方式部署时可能需要）
+          const fallback = '/fastnight/assets/guangming.svg';
+          img.onerror = function(){
+            console.error('备用路径也失败：', fallback);
+            showToast('图片加载失败：assets/guangming.svg（查看控制台）');
+          };
+          img.src = fallback;
+        };
 
         vis.appendChild(img);
         vis.style.boxShadow = '0 14px 48px rgba(255,107,107,0.18), inset 0 0 0 2px rgba(0,0,0,0.06)';
@@ -784,5 +777,6 @@ marketBackBtn.addEventListener('click', ()=>{
 </script>
 </body>
 </html>
+
 
 
