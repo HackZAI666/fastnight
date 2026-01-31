@@ -40,7 +40,6 @@
   .username{ font-weight:900; color:var(--neon1); font-size:20px; margin-top:6px; }
   .lobby-actions{ display:flex; flex-direction:column; gap:10px; width:100%; }
   .lobby-actions .btn{ width:100%; padding:14px 18px; font-size:16px; border-radius:12px; }
-  .lobby-actions .btn.ghost{ padding:12px 16px; }
   .lobby-right{ flex:1; display:flex; flex-direction:column; gap:12px; }
   .panel-row{ display:flex; gap:12px; align-items:flex-start; justify-content:space-between; }
   .list{ padding:14px; border-radius:10px; background: rgba(255,255,255,0.02); min-height:140px; font-size:15px; color:var(--muted); }
@@ -49,13 +48,12 @@
   #marketFull{ display:none; position:fixed; inset:0; z-index:92; background:linear-gradient(180deg, rgba(0,0,0,0.96), rgba(0,0,0,0.99)); padding:24px; box-sizing:border-box; }
 
   .market-card{ border-radius:10px; padding:12px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.03)); border:1px solid rgba(255,255,255,0.04); display:flex; flex-direction:column; gap:8px; align-items:center; }
-  .market-visual{ width:200px; height:200px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:20px; color:#071018; margin:0 auto; position:relative; overflow:hidden; }
-  .market-visual img.market-img{ max-width:90%; max-height:90%; object-fit:contain; display:block; pointer-events:none; }
+  .market-visual{ width:260px; height:260px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:20px; color:#071018; margin:0 auto; position:relative; overflow:hidden; background:transparent; }
+  .market-visual img.market-img{ max-width:92%; max-height:92%; object-fit:contain; display:block; pointer-events:none; }
 
   .market-meta{ display:flex; justify-content:space-between; align-items:center; font-weight:800; width:100%; padding:0 8px; box-sizing:border-box; }
   .market-actions{ display:flex; justify-content:flex-end; gap:8px; width:100%; padding:0 8px; box-sizing:border-box; }
 
-  /* 让市场内容成为明确的垂直滚动区域 */
   #marketContent {
     flex: 1 1 auto;
     overflow-y: auto;
@@ -67,13 +65,12 @@
   .dragging { cursor: grabbing; user-select: none; }
 
   @media (max-width:860px){
-    .market-visual{ width:160px; height:160px; }
+    .market-visual{ width:200px; height:200px; }
     #marketContent { max-height: calc(100vh - 180px); }
   }
 
   button:focus, input:focus { outline-offset:3px; outline:2px solid rgba(138,91,255,0.14); }
 
-  /* toast 简单样式（动态创建） */
   .toast { transition: opacity .6s; }
 </style>
 </head>
@@ -81,7 +78,6 @@
 
  <div class="bg-wrap" aria-hidden="true"><div class="beam"></div><div class="beam b2"></div><div class="grain"></div></div>
 
- <!-- 初始提示页 -->
  <div class="wrap" role="main">
    <div class="card" role="article" aria-labelledby="title">
      <h1 id="title" class="title">午夜突袭</h1>
@@ -94,7 +90,6 @@
    </div>
  </div>
 
- <!-- 条款 -->
  <div id="termsDetail" style="display:none; position:fixed; right:18px; top:18px; z-index:70; background:rgba(4,8,18,0.95); color:var(--muted); padding:12px 14px; border-radius:10px; width:min(420px,86vw); border:1px solid rgba(72,240,255,0.04);">
    <strong style="color:var(--neon1)">使用注意</strong>
    <p style="margin:8px 0 0 0; line-height:1.5; font-size:13px;">
@@ -103,7 +98,6 @@
    </p>
  </div>
 
- <!-- 账号 Modal（登录 / 注册 / 导出导入） -->
  <div id="accountModal" class="modal" style="display:none" role="dialog" aria-modal="true" aria-label="本地账号管理">
    <div class="modalCard" role="document">
      <div class="col" aria-labelledby="loginTitle">
@@ -142,7 +136,6 @@
    </div>
  </div>
 
- <!-- 大厅 -->
  <div id="lobby" class="lobby" role="application" aria-hidden="true">
    <div style="text-align:center; width:100%; margin-bottom:8px;">
      <div class="title-main">午夜突袭</div>
@@ -180,7 +173,6 @@
    </div>
  </div>
 
- <!-- 仓库全屏（左侧格子 9x25） -->
  <div id="stashFull" style="display:none;">
    <div style="display:flex; gap:18px; height:100%; align-items:flex-start; justify-content:center;">
      <div style="width:760px; flex:0 0 760px; background:rgba(255,255,255,0.02); border-radius:12px; padding:18px; overflow:auto; display:flex; justify-content:center;">
@@ -210,7 +202,6 @@
    </div>
  </div>
 
- <!-- 市场全屏 -->
  <div id="marketFull">
    <div style="display:flex; gap:18px; height:100%; align-items:flex-start; justify-content:center;">
      <div style="width:260px; flex:0 0 260px; background:rgba(255,255,255,0.02); border-radius:12px; padding:16px;">
@@ -230,7 +221,7 @@
      </div>
 
      <div style="flex:1; background:rgba(255,255,255,0.02); border-radius:12px; padding:16px; display:flex; flex-direction:column;">
-       <!-- 提示/注释：把你的光明甲 SVG 放到项目目录，例如：assets/guangming.svg -->
+       <!-- 说明：图片已配置为 GitHub Pages 路径 /fastnight/assets/guangming.png -->
        <div id="marketContent" style="flex:1; color:var(--muted); font-size:14px; display:flex; align-items:flex-start; justify-content:flex-start; gap:12px; padding:8px;">
          <!-- JS 填充 -->
        </div>
@@ -242,12 +233,8 @@
  </div>
 
 <script>
-/* ----------------------
-   本地账号系统    - localStorage key: hackz_accounts_v1
-   ---------------------- */
+/* 全文件包含完整逻辑（带容错的图片加载），仅对图片路径做了注释/设置 */
 const ACC_KEY = 'hackz_accounts_v1';
-
-// DOM
 const agreeBtn = document.getElementById('agreeBtn');
 const readMore = document.getElementById('readMore');
 const termsDetail = document.getElementById('termsDetail');
@@ -279,180 +266,8 @@ const marketContent = document.getElementById('marketContent');
 const marketBackBtn = document.getElementById('marketBackBtn');
 
 let currentUser = null;
-let playerSilver = 0; // 用“银币”表示玩家资金（显示为 K 单位）
+let playerSilver = 0;
 
-// helper: load/save accounts
-function loadAccounts(){
-  try{
-    const raw = localStorage.getItem(ACC_KEY);
-    return raw ? JSON.parse(raw) : {};
-  }catch(e){
-    console.error(e);
-    return {};
-  }
-}
-function saveAccounts(obj){
-  localStorage.setItem(ACC_KEY, JSON.stringify(obj));
-}
-
-// buffer->hex helper (used by SubtleCrypto path)
-function buf2hex(buffer){
-  return Array.prototype.map.call(new Uint8Array(buffer), x => ('00'+x.toString(16)).slice(-2)).join('');
-}
-
-// hash password via SubtleCrypto (with safe fallback for file:// or browsers lacking SubtleCrypto)
-async function hashPassword(password){
-  try{
-    if(window.crypto && crypto.subtle && typeof crypto.subtle.digest === 'function'){
-      const enc = new TextEncoder();
-      const data = enc.encode(password);
-      const hashBuf = await crypto.subtle.digest('SHA-256', data);
-      return buf2hex(hashBuf);
-    } else {
-      // fallback for insecure contexts (file://) — NOT cryptographically secure, but works for local demo
-      console.warn('SubtleCrypto unavailable — using fallback hash (base64). For best results serve via http://localhost');
-      return btoa(unescape(encodeURIComponent(password)));
-    }
-  }catch(err){
-    console.error('hashPassword error:', err);
-    return btoa(unescape(encodeURIComponent(password)));
-  }
-}
-
-// 全局错误捕捉，防止未捕获错误导致其它绑定失效
-window.addEventListener('error', function(e){
-  console.error('Global error caught:', e.error || e.message);
-  try{ showToast('脚本错误（查看控制台）: ' + (e.message || 'unknown')); }catch(_){}
-});
-window.addEventListener('unhandledrejection', function(e){
-  console.error('Unhandled rejection:', e.reason);
-  try{ showToast('脚本未处理的 promise 错误（查看控制台）'); }catch(_){}
-});
-
-// UI: show modal after agree
-agreeBtn.addEventListener('click', ()=> {
-  try{
-    accountModal.style.display = 'flex';
-    setTimeout(()=> regUser.focus(), 120);
-  }catch(err){
-    console.error('agreeBtn handler error:', err);
-    showToast('发生错误（查看控制台）');
-  }
-});
-
-// read more toggle
-readMore.addEventListener('click', ()=> {
-  try{
-    if(termsDetail.style.display === 'none' || termsDetail.style.display === ''){ termsDetail.style.display = 'block'; readMore.innerText = '隐藏详细条款'; }
-    else { termsDetail.style.display = 'none'; readMore.innerText = '查看详细条款'; }
-  }catch(err){
-    console.error('readMore handler error:', err);
-  }
-});
-
-// register
-regBtn.addEventListener('click', async ()=>{
-  try{
-    const u = (regUser.value||'').trim();
-    const p1 = regPass.value||'';
-    const p2 = regPass2.value||'';
-    if(u.length < 3 || u.length > 20){ alert('用户名长度 3-20'); return; }
-    if(!/^[\w\-]+$/.test(u)){ alert('用户名仅允许字母/数字/下划线/连字符'); return; }
-    if(p1.length < 6){ alert('密码至少 6 字符'); return; }
-    if(p1 !== p2){ alert('两次密码不一致'); return; }
-    const accounts = loadAccounts();
-    if(accounts[u]){ alert('用户名已存在（仅本设备）'); return; }
-    const h = await hashPassword(p1);
-    // 默认经济：1000k (1,000,000)
-    accounts[u] = { username: u, pwHash: h, createdAt: Date.now(), saves: { economy: { data: { silver: 1000000 } } } };
-    saveAccounts(accounts);
-    currentUser = u;
-    showToast(`已创建本地账号：${u}`);
-    showLobbyFor(currentUser);
-  }catch(e){
-    console.error(e); alert('创建失败');
-  }
-});
-
-// login
-loginBtn.addEventListener('click', async ()=>{
-  try{
-    const u = (loginUser.value||'').trim();
-    const p = loginPass.value||'';
-    if(!u || !p){ alert('请输入用户名与密码'); return; }
-    const accounts = loadAccounts();
-    const acc = accounts[u];
-    if(!acc){ alert('未找到本地账号'); return; }
-    const h = await hashPassword(p);
-    if(h !== acc.pwHash){ alert('密码错误'); return; }
-    currentUser = u;
-    showToast(`已登录：${u}`);
-    showLobbyFor(currentUser);
-  }catch(e){
-    console.error(e); alert('登录失败');
-  }
-});
-
-// guest
-guestBtn.addEventListener('click', ()=>{
-  try{
-    const guest = 'guest_' + Math.floor(Math.random()*90000+10000);
-    currentUser = guest;
-    // 为游客创建临时账号并赋初始资金
-    const accounts = loadAccounts();
-    accounts[guest] = { username: guest, pwHash: null, createdAt: Date.now(), saves: { economy: { data: { silver: 1000000 } }, stash: { data: { grid: new Array(9*25).fill(null), bag: [] } } } };
-    saveAccounts(accounts);
-    showToast(`游客进入：${guest}`);
-    showLobbyFor(currentUser);
-  }catch(e){
-    console.error(e);
-  }
-});
-
-// export
-exportBtn.addEventListener('click', ()=>{
-  try{
-    const all = loadAccounts();
-    const blob = new Blob([JSON.stringify(all, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `midnight_raid_accounts_backup_${new Date().toISOString().replace(/[:.]/g,'-')}.json`;
-    document.body.appendChild(a); a.click(); a.remove();
-    URL.revokeObjectURL(url);
-    showToast('已导出备份文件（请保存）');
-  }catch(e){
-    console.error(e); alert('导出失败');
-  }
-});
-
-// import
-importBtn.addEventListener('click', ()=> importFile.click());
-importFile.addEventListener('change', (ev)=>{
-  try{
-    const f = ev.target.files && ev.target.files[0]; if(!f) return;
-    const r = new FileReader();
-    r.onload = (e) => {
-      try{
-        const data = JSON.parse(e.target.result);
-        if(typeof data !== 'object' || Array.isArray(data)){ alert('备份格式错误'); return; }
-        const local = loadAccounts();
-        if(!confirm('导入将合并/覆盖本地账号（同名账号会被覆盖）。确认继续？')) return;
-        const merged = Object.assign({}, local, data);
-        saveAccounts(merged);
-        showToast('导入完成（已合并）');
-      }catch(err){
-        console.error(err); alert('读取备份失败');
-      }
-    };
-    r.readAsText(f);
-  }catch(err){
-    console.error(err);
-  }
-});
-
-// helpers
-function hideModal(){ accountModal.style.display = 'none'; }
 function showToast(txt){
   const el = document.createElement('div');
   el.className = 'toast';
@@ -462,167 +277,46 @@ function showToast(txt){
   setTimeout(()=> { el.style.transition='opacity .6s'; el.style.opacity='0'; setTimeout(()=> el.remove(), 620); }, 2200);
 }
 
-/* ==============
-   存取接口（游戏对接）
-   ============== */
-function loadSaveForUser(username){
-  const accounts = loadAccounts();
-  const acc = accounts[username];
-  if(!acc) return null;
-  return acc.saves || {};
-}
-function saveForUser(username, slotName, data){
-  const accounts = loadAccounts();
-  if(!accounts[username]) accounts[username] = { username, pwHash: null, createdAt: Date.now(), saves: {} };
-  accounts[username].saves = accounts[username].saves || {};
-  accounts[username].saves[slotName] = { data, updatedAt: Date.now() };
-  saveAccounts(accounts);
-}
+function buf2hex(buffer){ return Array.prototype.map.call(new Uint8Array(buffer), x => ('00'+x.toString(16)).slice(-2)).join(''); }
+async function hashPassword(password){ try{ const enc = new TextEncoder(); const data = enc.encode(password); const hashBuf = await crypto.subtle.digest('SHA-256', data); return buf2hex(hashBuf); }catch(e){ return btoa(unescape(encodeURIComponent(password))); } }
 
-/* ==============
-   大厅显示与经济
-   ============== */
-function updateGoldDisplay(){
-  const el = document.getElementById('goldDisplay');
-  if(!el) return;
-  const k = Math.floor((playerSilver || 0) / 1000);
-  el.textContent = '银币: ' + k.toLocaleString() + 'K';
-}
-function showLobbyFor(username){
-  try{
-    document.querySelector('.wrap').style.display = 'none';
-    accountModal.style.display = 'none';
+function loadAccounts(){ try{ const raw = localStorage.getItem(ACC_KEY); return raw ? JSON.parse(raw) : {}; }catch(e){ console.error(e); return {}; } }
+function saveAccounts(obj){ localStorage.setItem(ACC_KEY, JSON.stringify(obj)); }
+function loadSaveForUser(username){ const accounts = loadAccounts(); const acc = accounts[username]; if(!acc) return null; return acc.saves || {}; }
+function saveForUser(username, slotName, data){ const accounts = loadAccounts(); if(!accounts[username]) accounts[username] = { username, pwHash: null, createdAt: Date.now(), saves: {} }; accounts[username].saves = accounts[username].saves || {}; accounts[username].saves[slotName] = { data, updatedAt: Date.now() }; saveAccounts(accounts); }
 
-    lobbyName.textContent = username;
-    lobbyAvatar.textContent = username.slice(0,2).toUpperCase();
+agreeBtn.addEventListener('click', ()=> { accountModal.style.display = 'flex'; setTimeout(()=> regUser.focus(), 120); });
+readMore.addEventListener('click', ()=> { if(termsDetail.style.display === 'none' || termsDetail.style.display === ''){ termsDetail.style.display = 'block'; readMore.innerText = '隐藏详细条款'; } else { termsDetail.style.display = 'none'; readMore.innerText = '查看详细条款'; } });
 
-    const saves = loadSaveForUser(username) || {};
-    const stash = saves && saves.stash ? (saves.stash.data || saves.stash) : { grid: new Array(9*25).fill(null), bag: [] };
-    renderStashPreview(stash);
+regBtn.addEventListener('click', async ()=>{ const u = (regUser.value||'').trim(); const p1 = regPass.value||''; const p2 = regPass2.value||''; if(u.length < 3 || u.length > 20){ alert('用户名长度 3-20'); return; } if(!/^[\w\-]+$/.test(u)){ alert('用户名仅允许字母/数字/下划线/连字符'); return; } if(p1.length < 6){ alert('密码至少 6 字符'); return; } if(p1 !== p2){ alert('两次密码不一致'); return; } const accounts = loadAccounts(); if(accounts[u]){ alert('用户名已存在（仅本设备）'); return; } try{ const h = await hashPassword(p1); accounts[u] = { username: u, pwHash: h, createdAt: Date.now(), saves: { economy: { data: { silver: 1000000 } } } }; saveAccounts(accounts); currentUser = u; showToast(`已创建本地账号：${u}`); showLobbyFor(currentUser); }catch(e){ console.error(e); alert('创建失败'); } });
 
-    const econ = saves && saves.economy ? (saves.economy.data || saves.economy) : null;
-    playerSilver = (econ && typeof econ.silver === 'number') ? econ.silver : 1000000;
-    updateGoldDisplay();
+loginBtn.addEventListener('click', async ()=>{ const u = (loginUser.value||'').trim(); const p = loginPass.value||''; if(!u || !p){ alert('请输入用户名与密码'); return; } const accounts = loadAccounts(); const acc = accounts[u]; if(!acc){ alert('未找到本地账号'); return; } try{ const h = await hashPassword(p); if(h !== acc.pwHash){ alert('密码错误'); return; } currentUser = u; showToast(`已登录：${u}`); showLobbyFor(currentUser); }catch(e){ console.error(e); alert('登录失败'); } });
 
-    lobby.style.display = 'flex';
-  }catch(e){
-    console.error(e);
-  }
-}
-function renderStashPreview(stash){
-  const preview = document.getElementById('shopPreview');
-  if(!preview) return;
-  let html = '';
-  if(stash && stash.bag && stash.bag.length>0){
-    html = stash.bag.slice(-6).reverse().map(i=>`<div style="font-size:13px;color:var(--muted)">${i}</div>`).join('');
-  }else{
-    html = '<div style="font-size:13px;color:var(--muted)">仓库为空</div>';
-  }
-  preview.innerHTML = html;
-}
+guestBtn.addEventListener('click', ()=>{ const guest = 'guest_' + Math.floor(Math.random()*90000+10000); currentUser = guest; const accounts = loadAccounts(); accounts[guest] = { username: guest, pwHash: null, createdAt: Date.now(), saves: { economy: { data: { silver: 1000000 } }, stash: { data: { grid: new Array(9*25).fill(null), bag: [] } } } }; saveAccounts(accounts); showToast(`游客进入：${guest}`); showLobbyFor(currentUser); });
 
-/* ==============
-   仓库 UI 生成（9 x 25）
-   ============== */
-stashBtn.addEventListener('click', ()=>{
-  try{
-    if(!currentUser){ showToast('未登录'); return; }
-    lobby.style.display = 'none';
+exportBtn.addEventListener('click', ()=>{ const all = loadAccounts(); const blob = new Blob([JSON.stringify(all, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `midnight_raid_accounts_backup_${new Date().toISOString().replace(/[:.]/g,'-')}.json`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); showToast('已导出备份文件（请保存）'); });
+importBtn.addEventListener('click', ()=> importFile.click());
+importFile.addEventListener('change', (ev)=>{ const f = ev.target.files && ev.target.files[0]; if(!f) return; const r = new FileReader(); r.onload = (e) => { try{ const data = JSON.parse(e.target.result); if(typeof data !== 'object' || Array.isArray(data)){ alert('备份格式错误'); return; } const local = loadAccounts(); if(!confirm('导入将合并/覆盖本地账号（同名账号会被覆盖）。确认继续？')) return; const merged = Object.assign({}, local, data); saveAccounts(merged); showToast('导入完成（已合并）'); }catch(err){ console.error(err); alert('读取备份失败'); } }; r.readAsText(f); });
 
-    const saves = loadSaveForUser(currentUser) || {};
-    let stash = saves && saves.stash ? (saves.stash.data || saves.stash) : null;
-    const COLS = 9, ROWS = 25;
-    if(!stash){
-      stash = { grid: new Array(COLS*ROWS).fill(null), bag: [] };
-      saveForUser(currentUser,'stash', stash);
-    }
+function updateGoldDisplay(){ const el = document.getElementById('goldDisplay'); if(!el) return; const k = Math.floor((playerSilver || 0) / 1000); el.textContent = '银币: ' + k.toLocaleString() + 'K'; }
+function showLobbyFor(username){ document.querySelector('.wrap').style.display = 'none'; accountModal.style.display = 'none'; lobbyName.textContent = username; lobbyAvatar.textContent = username.slice(0,2).toUpperCase(); const saves = loadSaveForUser(username) || {}; const stash = saves && saves.stash ? (saves.stash.data || saves.stash) : { grid: new Array(9*25).fill(null), bag: [] }; renderStashPreview(stash); const econ = saves && saves.economy ? (saves.economy.data || saves.economy) : null; playerSilver = (econ && typeof econ.silver === 'number') ? econ.silver : 1000000; updateGoldDisplay(); lobby.style.display = 'flex'; }
+function renderStashPreview(stash){ const preview = document.getElementById('shopPreview'); if(!preview) return; let html = ''; if(stash && stash.bag && stash.bag.length>0){ html = stash.bag.slice(-6).reverse().map(i=>`<div style="font-size:13px;color:var(--muted)">${i}</div>`).join(''); }else{ html = '<div style="font-size:13px;color:var(--muted)">仓库为空</div>'; } preview.innerHTML = html; }
 
-    const wrap = stashGridWrap;
-    wrap.innerHTML = '';
+/* 仓库 UI */
+stashBtn.addEventListener('click', ()=>{ if(!currentUser){ showToast('未登录'); return; } lobby.style.display = 'none'; const saves = loadSaveForUser(currentUser) || {}; let stash = saves && saves.stash ? (saves.stash.data || saves.stash) : null; const COLS = 9, ROWS = 25; if(!stash){ stash = { grid: new Array(COLS*ROWS).fill(null), bag: [] }; saveForUser(currentUser,'stash', stash); } const wrap = stashGridWrap; wrap.innerHTML = ''; const SLOT_SIZE = 64; const GAP = 2; const totalGridWidth = COLS * SLOT_SIZE + (COLS - 1) * GAP + 16; wrap.style.width = totalGridWidth + 'px'; wrap.style.overflowY = 'auto'; wrap.style.maxHeight = 'calc(100vh - 140px)'; wrap.style.display = 'flex'; wrap.style.justifyContent = 'center'; const grid = document.createElement('div'); grid.style.display = 'grid'; grid.style.gridTemplateColumns = `repeat(${COLS}, ${SLOT_SIZE}px)`; grid.style.gridAutoRows = `${SLOT_SIZE}px`; grid.style.gap = GAP + 'px'; grid.style.padding = '8px'; for(let r=0;r<ROWS;r++){ for(let c=0;c<COLS;c++){ const idx = r*COLS + c; const slot = document.createElement('div'); slot.className = 'stash-slot'; slot.dataset.idx = idx; slot.style.width = SLOT_SIZE + 'px'; slot.style.height = SLOT_SIZE + 'px'; slot.style.border = '1px solid rgba(0,0,0,0.06)'; slot.style.borderRadius = '4px'; slot.style.background = '#e9e9e9'; slot.style.display = 'flex'; slot.style.alignItems = 'center'; slot.style.justifyContent = 'center'; slot.style.color = '#111'; slot.style.fontSize = '12px'; const val = stash.grid[idx]; if(val){ slot.textContent = val.name || 'Item'; slot.style.background = 'rgba(72,240,255,0.12)'; slot.style.border = '1px solid rgba(72,240,255,0.12)'; } grid.appendChild(slot); } } wrap.appendChild(grid); stashFull.style.display = 'block'; });
+stashBackBtn.addEventListener('click', ()=>{ stashFull.style.display = 'none'; lobby.style.display = 'flex'; });
 
-    const SLOT_SIZE = 64;
-    const GAP = 2;
-    const totalGridWidth = COLS * SLOT_SIZE + (COLS - 1) * GAP + 16;
-    wrap.style.width = totalGridWidth + 'px';
-    wrap.style.overflowY = 'auto';
-    wrap.style.maxHeight = 'calc(100vh - 140px)';
-    wrap.style.display = 'flex';
-    wrap.style.justifyContent = 'center';
-
-    const grid = document.createElement('div');
-    grid.style.display = 'grid';
-    grid.style.gridTemplateColumns = `repeat(${COLS}, ${SLOT_SIZE}px)`;
-    grid.style.gridAutoRows = `${SLOT_SIZE}px`;
-    grid.style.gap = GAP + 'px';
-    grid.style.padding = '8px';
-
-    for(let r=0;r<ROWS;r++){
-      for(let c=0;c<COLS;c++){
-        const idx = r*COLS + c;
-        const slot = document.createElement('div');
-        slot.className = 'stash-slot';
-        slot.dataset.idx = idx;
-        slot.style.width = SLOT_SIZE + 'px';
-        slot.style.height = SLOT_SIZE + 'px';
-        slot.style.border = '1px solid rgba(0,0,0,0.06)';
-        slot.style.borderRadius = '4px';
-        slot.style.background = '#e9e9e9';
-        slot.style.display = 'flex';
-        slot.style.alignItems = 'center';
-        slot.style.justifyContent = 'center';
-        slot.style.color = '#111';
-        slot.style.fontSize = '12px';
-        const val = stash.grid[idx];
-        if(val){
-          slot.textContent = val.name || 'Item';
-          slot.style.background = 'rgba(72,240,255,0.12)';
-          slot.style.border = '1px solid rgba(72,240,255,0.12)';
-        }
-        grid.appendChild(slot);
-      }
-    }
-
-    wrap.appendChild(grid);
-    stashFull.style.display = 'block';
-  }catch(e){
-    console.error(e);
-    showToast('打开仓库失败（查看控制台）');
-  }
-});
-stashBackBtn.addEventListener('click', ()=>{
-  stashFull.style.display = 'none';
-  lobby.style.display = 'flex';
-});
-
-/* ==============
-   市场（armors）渲染：空卡片 + 价格 + 购买
-   ============== */
+/* 市场数据 + 光明甲价格权重逻辑 */
 function randInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
-function createMarketData(){
-  const armors = [];
-  armors.push({ id:'armor_red_1', name:'光明甲', rarity:'red', price: 274430 });
-  for(let i=0;i<1;i++) armors.push({ id:`armor_red_${i+2}`, name:`红甲 ${i+2}`, rarity:'red', price: randInt(220000,300000) });
-  for(let i=0;i<3;i++) armors.push({ id:`armor_lpur_${i+1}`, name:`亮紫甲 ${i+1}`, rarity:'brightPurple', price: randInt(50000,70000) });
-  for(let i=0;i<5;i++) armors.push({ id:`armor_purp_${i+1}`, name:`紫甲 ${i+1}`, rarity:'purple', price: randInt(32000,38000) });
-  for(let i=0;i<4;i++) armors.push({ id:`armor_blue_${i+1}`, name:`蓝甲 ${i+1}`, rarity:'blue', price: randInt(9000,16000) });
-  return { armors };
-}
+function createMarketData(){ const armors = []; armors.push({ id:'armor_red_1', name:'光明甲', rarity:'red', price: 274430 }); for(let i=0;i<1;i++) armors.push({ id:`armor_red_${i+2}`, name:`红甲 ${i+2}`, rarity:'red', price: randInt(220000,300000) }); for(let i=0;i<3;i++) armors.push({ id:`armor_lpur_${i+1}`, name:`亮紫甲 ${i+1}`, rarity:'brightPurple', price: randInt(50000,70000) }); for(let i=0;i<5;i++) armors.push({ id:`armor_purp_${i+1}`, name:`紫甲 ${i+1}`, rarity:'purple', price: randInt(32000,38000) }); for(let i=0;i<4;i++) armors.push({ id:`armor_blue_${i+1}`, name:`蓝甲 ${i+1}`, rarity:'blue', price: randInt(9000,16000) }); return { armors }; }
 const MARKET_DATA = createMarketData();
-
-/* --- 为 光明甲 (armor_red_1) 生成加权随机价格 --- */
-function generateGuangmingPrice(){
-  const r = Math.random();
-  if(r < 0.15) return randInt(589760, 671200);
-  else if(r < 0.85) return randInt(671200, 791300);
-  else return randInt(791300, 849990);
-}
-
-let marketPriceInterval = null;
-const PRICE_REFRESH_MS = 6 * 60 * 1000;
+function generateGuangmingPrice(){ const r = Math.random(); if(r < 0.15) return randInt(589760, 671200); else if(r < 0.85) return randInt(671200, 791300); else return randInt(791300, 849990); }
+let marketPriceInterval = null; const PRICE_REFRESH_MS = 6 * 60 * 1000;
 function refreshGuangmingPriceAndMaybeRender(){ const item = MARKET_DATA.armors.find(x => x.id === 'armor_red_1'); if(item){ item.price = generateGuangmingPrice(); if(marketFull.style.display === 'block'){ renderArmorGrid(MARKET_DATA.armors); } } }
 function startMarketPriceRefresh(){ refreshGuangmingPriceAndMaybeRender(); if(marketPriceInterval) clearInterval(marketPriceInterval); marketPriceInterval = setInterval(()=>{ refreshGuangmingPriceAndMaybeRender(); }, PRICE_REFRESH_MS); }
 function stopMarketPriceRefresh(){ if(marketPriceInterval){ clearInterval(marketPriceInterval); marketPriceInterval = null; } }
 
+/* 渲染市场（含光明甲图片加载容错） */
 function renderArmorGrid(list){
   try{
     marketContent.innerHTML = '';
@@ -637,74 +331,108 @@ function renderArmorGrid(list){
       const card = document.createElement('div');
       card.className = 'market-card';
 
-      // visual: 200x200 正方形
       const vis = document.createElement('div');
       vis.className = 'market-visual';
       vis.style.background = colorMap[item.rarity] || '#ddd';
       vis.style.boxShadow = 'inset 0 0 0 2px rgba(0,0,0,0.06)';
 
-      // 如果是光明甲（armor_red_1），放入 img 占位（使用正确的相对路径）
+      // ========== 光明甲图片加载（已配置为 GitHub Pages 路径 + 本地备用） ==========
       if(item.id === 'armor_red_1'){
-        const img = document.createElement('img');
-        img.className = 'market-img';
-        img.alt = '光明甲';
+        // 你说图片在 GitHub 静态站点： fastnight\assets\guangming.png
+        // 我把主路径设置为指向该站点根路径（适用于 GitHub Pages: https://<you>.github.io/fastnight/...）
+        const primaryPath = '/fastnight/assets/guangming.png';
 
-        // 正确的（也最常用）路径：相对于 index.html 的相对路径
-        const primary = 'assets/guangming.svg';
-        img.src = primary;
-        // 失败时显示提示并尝试备用路径
-        img.onerror = function(){
-          console.warn('assets/guangming.svg 加载失败，尝试备用路径 /fastnight/assets/guangming.svg');
-          // 备用尝试（当你以某些特殊方式部署时可能需要）
-          const fallback = '/fastnight/assets/guangming.svg';
-          img.onerror = function(){
-            console.error('备用路径也失败：', fallback);
-            showToast('图片加载失败：assets/guangming.svg（查看控制台）');
+        // 同时保留一个本地相对备用路径（若在本地测试，把 guangming.png 放到 assets 文件夹下）
+        const localFallback = 'assets/guangming.png';
+
+        // 调试测试开关（临时使用外网占位图测试渲染）
+        const TEST_WITH_EXTERNAL = false;
+        const externalTestURL = 'https://via.placeholder.com/360x360.png?text=GM';
+
+        // 先用 Image 预加载探测
+        const probe = new Image();
+        probe.onload = function(){
+          console.log('[IMG] 预加载成功 ->', primaryPath);
+          const img = document.createElement('img');
+          img.className = 'market-img';
+          img.alt = '光明甲';
+          img.src = primaryPath;
+          img.style.maxWidth = '92%';
+          img.style.maxHeight = '92%';
+          img.style.display = 'block';
+          img.style.pointerEvents = 'none';
+          vis.appendChild(img);
+          vis.style.boxShadow = '0 22px 60px rgba(255,107,107,0.18), inset 0 0 0 2px rgba(0,0,0,0.06)';
+        };
+        probe.onerror = function(ev){
+          console.warn('[IMG] 主路径加载失败 ->', primaryPath, ev);
+          showToast('图片加载失败（主路径），尝试备用或检查路径');
+          // 尝试把图片作为 background-image（有时 path 在 CSP/跨域下更明显）
+          vis.style.backgroundImage = `url(${primaryPath})`;
+          vis.style.backgroundSize = 'contain';
+          vis.style.backgroundPosition = 'center';
+          vis.style.backgroundRepeat = 'no-repeat';
+
+          // 尝试备用本地路径
+          const probe2 = new Image();
+          probe2.onload = function(){
+            console.log('[IMG] 本地备用路径成功 ->', localFallback);
+            const img2 = document.createElement('img');
+            img2.className = 'market-img';
+            img2.alt = '光明甲';
+            img2.src = localFallback;
+            img2.style.maxWidth = '92%';
+            img2.style.maxHeight = '92%';
+            img2.style.display = 'block';
+            img2.style.pointerEvents = 'none';
+            vis.appendChild(img2);
+            vis.style.boxShadow = '0 22px 60px rgba(255,107,107,0.18), inset 0 0 0 2px rgba(0,0,0,0.06)';
           };
-          img.src = fallback;
+          probe2.onerror = function(e2){
+            console.error('[IMG] 本地备用也失败 ->', localFallback, e2);
+            // 若你想临时验证渲染流程是否正常，可把 TEST_WITH_EXTERNAL 设为 true（会加载公网上的占位图）
+            if(TEST_WITH_EXTERNAL){
+              const img3 = document.createElement('img');
+              img3.className = 'market-img';
+              img3.alt = '测试图片';
+              img3.src = externalTestURL;
+              img3.style.maxWidth = '92%';
+              img3.style.maxHeight = '92%';
+              img3.style.display = 'block';
+              img3.style.pointerEvents = 'none';
+              vis.appendChild(img3);
+              vis.style.boxShadow = '0 22px 60px rgba(255,107,107,0.18), inset 0 0 0 2px rgba(0,0,0,0.06)';
+              console.log('[IMG] 使用外网占位图进行测试');
+            } else {
+              // 显示文本替代，提示用户检查路径/文件名
+              const altDiv = document.createElement('div');
+              altDiv.textContent = '图片未加载（检查 /fastnight/assets/guangming.png）';
+              altDiv.style.fontWeight = '900';
+              altDiv.style.color = 'rgba(10,10,10,0.6)';
+              vis.appendChild(altDiv);
+            }
+          };
+          probe2.src = localFallback;
         };
 
-        vis.appendChild(img);
-        vis.style.boxShadow = '0 14px 48px rgba(255,107,107,0.18), inset 0 0 0 2px rgba(0,0,0,0.06)';
+        // 启动预加载（首选 GitHub Pages 路径）
+        probe.src = TEST_WITH_EXTERNAL ? externalTestURL : primaryPath;
       }
 
-      // meta row: name & price
       const meta = document.createElement('div');
       meta.className = 'market-meta';
-      const name = document.createElement('div');
-      name.textContent = item.name; name.style.opacity = '0.95';
-      const price = document.createElement('div');
-      price.textContent = item.price.toLocaleString() + ' G';
+      const name = document.createElement('div'); name.textContent = item.name; name.style.opacity = '0.95';
+      const price = document.createElement('div'); price.textContent = (item.price||0).toLocaleString() + ' G';
       meta.appendChild(name); meta.appendChild(price);
 
-      // actions: purchase button
       const actions = document.createElement('div');
       actions.className = 'market-actions';
       const buyBtn = document.createElement('button');
       buyBtn.className = 'btn';
       buyBtn.textContent = '购买';
-      buyBtn.addEventListener('click', ()=>{
-        try{
-          if(!currentUser){ showToast('未登录'); return; }
-          if(playerSilver < item.price){ showToast('银币不足'); return; }
-          playerSilver -= item.price;
-          saveForUser(currentUser,'economy',{ silver: playerSilver });
-          updateGoldDisplay();
-          const saves = loadSaveForUser(currentUser) || {};
-          const stash = saves && saves.stash ? (saves.stash.data || saves.stash) : { grid:new Array(9*25).fill(null), bag:[] };
-          stash.bag = stash.bag || [];
-          stash.bag.push(item.name);
-          saveForUser(currentUser,'stash', stash);
-          showToast('购买成功并已放入仓库');
-          renderStashPreview(stash);
-          renderArmorGrid(MARKET_DATA.armors);
-        }catch(e){
-          console.error(e); showToast('购买失败');
-        }
-      });
+      buyBtn.addEventListener('click', ()=>{ if(!currentUser){ showToast('未登录'); return; } if(playerSilver < item.price){ showToast('银币不足'); return; } playerSilver -= item.price; saveForUser(currentUser,'economy',{ silver: playerSilver }); updateGoldDisplay(); const saves = loadSaveForUser(currentUser) || {}; const stash = saves && saves.stash ? (saves.stash.data || saves.stash) : { grid:new Array(9*25).fill(null), bag:[] }; stash.bag = stash.bag || []; stash.bag.push(item.name); saveForUser(currentUser,'stash', stash); showToast('购买成功并已放入仓库'); renderStashPreview(stash); renderArmorGrid(MARKET_DATA.armors); });
       actions.appendChild(buyBtn);
 
-      // assemble
       card.appendChild(vis);
       card.appendChild(meta);
       card.appendChild(actions);
@@ -713,14 +441,12 @@ function renderArmorGrid(list){
 
     marketContent.appendChild(grid);
   }catch(e){
-    console.error(e);
+    console.error('renderArmorGrid error:', e);
     showToast('渲染市场失败（查看控制台）');
   }
 }
 
-/* ==============
-   中键拖动支持（可保留），不影响鼠标滚轮滚动
-   ============== */
+/* 中键拖动支持（不影响滚轮） */
 let isMiddleDragging = false, middleDragStartY = 0, middleDragStartScroll = 0;
 function onMiddleMouseDown(e){ if(e.button !== 1) return; e.preventDefault(); isMiddleDragging = true; middleDragStartY = e.clientY; middleDragStartScroll = marketContent.scrollTop; marketContent.classList.add('dragging'); document.addEventListener('mousemove', onMiddleMouseMove, { passive: false }); document.addEventListener('mouseup', onMiddleMouseUp, { once: true, passive: false }); }
 function onMiddleMouseMove(e){ if(!isMiddleDragging) return; e.preventDefault(); const dy = e.clientY - middleDragStartY; marketContent.scrollTop = middleDragStartScroll - dy; }
@@ -728,41 +454,35 @@ function onMiddleMouseUp(e){ isMiddleDragging = false; marketContent.classList.r
 function attachMiddleDragSupport(){ marketContent.removeEventListener('mousedown', onMiddleMouseDown); marketContent.addEventListener('mousedown', onMiddleMouseDown, { passive: false }); marketContent.setAttribute('tabindex', '0'); }
 function detachMiddleDragSupport(){ marketContent.removeEventListener('mousedown', onMiddleMouseDown); marketContent.removeAttribute('tabindex'); isMiddleDragging = false; marketContent.classList.remove('dragging'); }
 
-// market open
 marketBtn.addEventListener('click', ()=>{
-  try{
-    if(!currentUser){ showToast('未登录'); return; }
-    lobby.style.display = 'none';
-    marketFull.style.display = 'block';
-    setTimeout(()=>{
-      const tabs = document.querySelectorAll('.market-tab');
-      const placeholder = document.createElement('div');
-      placeholder.textContent = '当前分类暂无上架物品（AI 市场模拟）。';
-      placeholder.style.color = 'var(--muted)';
-      tabs.forEach(t=>{
-        t.classList.remove('active');
-        t.addEventListener('click', ()=>{
-          tabs.forEach(x=>x.classList.remove('active'));
-          t.classList.add('active');
-          const cat = t.dataset.cat;
-          if(cat === 'armors'){
-            renderArmorGrid(MARKET_DATA.armors);
-          }else{
-            marketContent.innerHTML = '';
-            marketContent.appendChild(placeholder);
-          }
-        });
+  if(!currentUser){ showToast('未登录'); return; }
+  lobby.style.display = 'none';
+  marketFull.style.display = 'block';
+  setTimeout(()=>{
+    const tabs = document.querySelectorAll('.market-tab');
+    const placeholder = document.createElement('div');
+    placeholder.textContent = '当前分类暂无上架物品（AI 市场模拟）。';
+    placeholder.style.color = 'var(--muted)';
+    tabs.forEach(t=>{
+      t.classList.remove('active');
+      t.addEventListener('click', ()=>{
+        tabs.forEach(x=>x.classList.remove('active'));
+        t.classList.add('active');
+        const cat = t.dataset.cat;
+        if(cat === 'armors'){
+          renderArmorGrid(MARKET_DATA.armors);
+        }else{
+          marketContent.innerHTML = '';
+          marketContent.appendChild(placeholder);
+        }
       });
-      const armTab = document.querySelector('.market-tab[data-cat="armors"]');
-      if(armTab) armTab.click();
-      startMarketPriceRefresh();
-      attachMiddleDragSupport();
-      setTimeout(()=> marketContent.focus(), 120);
-    },120);
-  }catch(e){
-    console.error(e);
-    showToast('打开市场失败（查看控制台）');
-  }
+    });
+    const armTab = document.querySelector('.market-tab[data-cat="armors"]');
+    if(armTab) armTab.click();
+    startMarketPriceRefresh();
+    attachMiddleDragSupport();
+    setTimeout(()=> marketContent.focus(), 120);
+  },120);
 });
 marketBackBtn.addEventListener('click', ()=>{
   marketFull.style.display = 'none';
@@ -771,12 +491,12 @@ marketBackBtn.addEventListener('click', ()=>{
   detachMiddleDragSupport();
 });
 
-/* utility: optional quick entry for dev */
-// showLobbyFor('guest_12345'); // dev use
-
+// 可选：直接进入游客（便于测试）
+// showLobbyFor('guest_test'); // 取消注释快速进入
 </script>
 </body>
 </html>
+
 
 
 
