@@ -17,6 +17,10 @@
       font-family: Arial, sans-serif;
     }
 
+    button {
+      touch-action: manipulation;
+    }
+
     #gameCanvas {
       display: block;
       touch-action: none;
@@ -89,6 +93,7 @@
       justify-content: center;
       padding: 20px;
       box-sizing: border-box;
+      pointer-events: auto;
     }
 
     #dangerLobbyOverlay,

@@ -970,34 +970,52 @@ function startDangerRaid() {
   syncUi();
 }
 
-battleEnterBtn.addEventListener("click", startBattle);
+function handleMenuClick(id) {
+  if (id === "battleEnterBtn") {
+    startBattle();
+    return;
+  }
 
-dangerEnterBtn.addEventListener("click", () => {
-  showDangerLobby();
-});
+  if (id === "dangerEnterBtn") {
+    showDangerLobby();
+    return;
+  }
 
-dangerWarehouseBtn.addEventListener("click", () => {
-  showWarehouse();
-});
+  if (id === "dangerWarehouseBtn") {
+    showWarehouse();
+    return;
+  }
 
-dangerStartBtn.addEventListener("click", () => {
-  startDangerRaid();
-});
+  if (id === "dangerStartBtn") {
+    startDangerRaid();
+    return;
+  }
 
-warehouseBackBtn.addEventListener("click", () => {
-  showDangerLobby();
-});
+  if (id === "warehouseBackBtn") {
+    showDangerLobby();
+    return;
+  }
 
-returnLobbyBtn.addEventListener("click", () => {
-  returnFromResult();
-});
+  if (id === "returnLobbyBtn") {
+    returnFromResult();
+    return;
+  }
 
-gearBtn.addEventListener("click", () => {
-  setSettingsOpen(!settingsOpen);
-});
+  if (id === "gearBtn") {
+    setSettingsOpen(!settingsOpen);
+    return;
+  }
 
-closeSettingsBtn.addEventListener("click", () => {
-  setSettingsOpen(false);
+  if (id === "closeSettingsBtn") {
+    setSettingsOpen(false);
+    return;
+  }
+}
+
+document.addEventListener("click", (e) => {
+  const target = e.target;
+  if (!target || !target.id) return;
+  handleMenuClick(target.id);
 });
 
 mobileModeCheckbox.addEventListener("change", () => {
