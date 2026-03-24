@@ -10,19 +10,16 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: #000;
+      background: #fff;
       user-select: none;
       -webkit-user-select: none;
       touch-action: none;
+      font-family: Arial, sans-serif;
     }
 
     #gameCanvas {
       display: block;
       touch-action: none;
-    }
-
-    #hud {
-      z-index: 10;
     }
 
     #gearBtn {
@@ -56,7 +53,6 @@
       z-index: 31;
       display: none;
       pointer-events: auto;
-      font-family: sans-serif;
     }
 
     #settingsPanel .row {
@@ -77,6 +73,311 @@
       cursor: pointer;
     }
 
+    #lobbyOverlay,
+    #dangerLobbyOverlay,
+    #warehouseOverlay,
+    #resultOverlay,
+    #loginOverlay,
+    #newAccountOverlay,
+    #accountCodeOverlay {
+      position: fixed;
+      inset: 0;
+      background: #fff;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    #dangerLobbyOverlay,
+    #warehouseOverlay,
+    #resultOverlay,
+    #loginOverlay,
+    #newAccountOverlay,
+    #accountCodeOverlay {
+      display: none;
+    }
+
+    #lobbyPanel,
+    #resultPanel,
+    #loginPanel,
+    #newAccountPanel,
+    #accountCodePanel {
+      width: min(980px, 100%);
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+      padding: 28px;
+      box-sizing: border-box;
+    }
+
+    #lobbyTitle,
+    #resultTitle,
+    #dangerTitle,
+    #loginTitle,
+    #newAccountTitle,
+    #accountCodeTitle {
+      text-align: center;
+      font-size: 34px;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 10px;
+    }
+
+    #lobbySubtitle,
+    #resultSubtitle,
+    #dangerSubtitle,
+    #loginSubtitle,
+    #newAccountSubtitle,
+    #accountCodeSubtitle {
+      text-align: center;
+      color: #666;
+      font-size: 15px;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    #modeGrid {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .modeCard {
+      flex: 1 1 320px;
+      min-height: 260px;
+      border: 1px solid #e6e6e6;
+      border-radius: 22px;
+      padding: 22px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: #fafafa;
+    }
+
+    .modeCard h2 {
+      margin: 0 0 10px 0;
+      font-size: 26px;
+      color: #111;
+    }
+
+    .modeCard p {
+      margin: 0;
+      color: #444;
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    .modeCard .meta {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #fff;
+      border: 1px solid #eee;
+      color: #555;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .enterBtn,
+    .backBtn,
+    .greenBtn,
+    .signBtn {
+      margin-top: 18px;
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      padding: 12px 16px;
+      background: #111;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .greenBtn {
+      background: #1f9d42;
+      box-shadow: 0 8px 18px rgba(31, 157, 66, 0.18);
+    }
+
+    .backBtn {
+      width: auto;
+      min-width: 180px;
+      display: block;
+      margin: 0 auto;
+    }
+
+    #dangerLobbyContent {
+      position: relative;
+      width: min(1000px, 100%);
+      height: min(680px, 100%);
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 28px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+      overflow: hidden;
+    }
+
+    #dangerTopText {
+      position: absolute;
+      left: 50%;
+      top: 24px;
+      transform: translateX(-50%);
+      text-align: center;
+      color: #111;
+      z-index: 2;
+    }
+
+    #dangerTopText .title {
+      font-size: 34px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    #dangerTopText .sub {
+      font-size: 15px;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    #dangerAvatarWrap {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -54%);
+      width: 220px;
+      height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #dangerAvatarCanvas {
+      display: block;
+    }
+
+    #dangerAvatarLabel {
+      position: absolute;
+      left: 50%;
+      top: 222px;
+      transform: translateX(-50%);
+      font-size: 14px;
+      color: #444;
+      text-align: center;
+      width: 180px;
+      line-height: 1.5;
+    }
+
+    #dangerWarehouseBtn {
+      position: absolute;
+      left: 24px;
+      bottom: 24px;
+      width: 170px;
+      height: 56px;
+      border: none;
+      border-radius: 16px;
+      background: rgba(0, 0, 0, 0.08);
+      color: #111;
+      font-size: 17px;
+      cursor: pointer;
+      z-index: 3;
+    }
+
+    #dangerStartBtn {
+      position: absolute;
+      right: 24px;
+      bottom: 24px;
+      width: 190px;
+      height: 56px;
+      border: none;
+      border-radius: 16px;
+      background: #1f9d42;
+      color: #fff;
+      font-size: 17px;
+      cursor: pointer;
+      box-shadow: 0 10px 22px rgba(31, 157, 66, 0.20);
+      z-index: 3;
+    }
+
+    #warehouseLayout {
+      width: min(1280px, 100%);
+      height: min(820px, 100%);
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 28px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+      overflow: hidden;
+      display: flex;
+    }
+
+    #warehouseLeftPane {
+      flex: 1;
+      position: relative;
+      background: #fff;
+      overflow: auto;
+    }
+
+    #warehouseCanvas {
+      display: block;
+      width: 100%;
+      touch-action: none;
+    }
+
+    #warehouseRightPane {
+      width: 320px;
+      background: #f7f7f7;
+      border-left: 1px solid #eaeaea;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #warehouseTabBar {
+      padding: 16px 16px 0 16px;
+    }
+
+    .folderTab {
+      display: inline-block;
+      padding: 10px 14px;
+      border-radius: 14px 14px 8px 8px;
+      background: #fff;
+      border: 1px solid #dedede;
+      border-bottom: none;
+      font-size: 15px;
+      color: #111;
+      box-shadow: 0 -1px 0 rgba(0,0,0,0.03);
+    }
+
+    #warehouseInfo {
+      padding: 18px 16px;
+      color: #222;
+      line-height: 1.6;
+      font-size: 15px;
+      flex: 1;
+    }
+
+    #warehouseInfo .card {
+      background: #fff;
+      border: 1px solid #ececec;
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    #warehouseBackBtn {
+      margin: 0 16px 16px 16px;
+      width: calc(100% - 32px);
+      height: 52px;
+      border: none;
+      border-radius: 14px;
+      background: #111;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
     #mobileControls {
       position: fixed;
       inset: 0;
@@ -87,10 +388,10 @@
 
     #joystick {
       position: fixed;
-      left: 18px;
-      bottom: 18px;
-      width: 150px;
-      height: 150px;
+      left: 14px;
+      bottom: 14px;
+      width: 190px;
+      height: 190px;
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.08);
       border: 2px solid rgba(255, 255, 255, 0.10);
@@ -102,10 +403,10 @@
       position: absolute;
       left: 50%;
       top: 50%;
-      width: 56px;
-      height: 56px;
-      margin-left: -28px;
-      margin-top: -28px;
+      width: 70px;
+      height: 70px;
+      margin-left: -35px;
+      margin-top: -35px;
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.20);
       border: 2px solid rgba(255, 255, 255, 0.14);
@@ -115,8 +416,8 @@
     .mobileBtn {
       position: fixed;
       right: 18px;
-      width: 86px;
-      height: 86px;
+      width: 92px;
+      height: 92px;
       border: none;
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.10);
@@ -132,17 +433,329 @@
     }
 
     #reloadBtn {
-      bottom: 114px;
+      bottom: 210px;
     }
 
     #jumpBtn {
-      bottom: 210px;
+      bottom: 114px;
+    }
+
+    #hud {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    #playerKillToast {
+      position: absolute;
+      top: 52px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 14px;
+      border-radius: 12px;
+      background: rgba(255, 245, 130, 0.95);
+      color: #111;
+      font-size: 16px;
+      font-weight: 700;
+      box-shadow: 0 0 18px rgba(255, 240, 120, 0.55);
+      display: none;
+      pointer-events: none;
+    }
+
+    #killFeed {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 6px 12px;
+      background: rgba(0, 0, 0, 0.55);
+      color: #fff;
+      font-size: 16px;
+      pointer-events: auto;
+      cursor: pointer;
+      border-radius: 10px;
+    }
+
+    #ammoHud {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 6px 12px;
+      background: rgba(0, 0, 0, 0.55);
+      color: #fff;
+      font-size: 16px;
+      border-radius: 10px;
+    }
+
+    #scoreboard {
+      position: absolute;
+      top: 52px;
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 240px;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.92);
+      color: #000;
+      font-size: 16px;
+      display: none;
+      pointer-events: auto;
+      border-radius: 14px;
+    }
+
+    .signTextArea {
+      width: 100%;
+      min-height: 160px;
+      resize: vertical;
+      border: 1px solid #ddd;
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-size: 15px;
+      line-height: 1.6;
+      box-sizing: border-box;
+      outline: none;
+      background: #fff;
+      color: #111;
+    }
+
+    .signInput {
+      width: 100%;
+      height: 54px;
+      border: 1px solid #ddd;
+      border-radius: 16px;
+      padding: 0 16px;
+      font-size: 16px;
+      box-sizing: border-box;
+      outline: none;
+      background: #fff;
+      color: #111;
+    }
+
+    .signInfoBox {
+      border: 1px solid #eee;
+      border-radius: 18px;
+      background: #fafafa;
+      padding: 18px;
+      color: #222;
+      line-height: 1.75;
+      font-size: 16px;
+    }
+
+    .signError {
+      margin-top: 10px;
+      color: #d64040;
+      font-size: 14px;
+      min-height: 18px;
+    }
+
+    .signRow {
+      display: flex;
+      gap: 12px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    #dangerSaveBtn {
+      position: absolute;
+      left: 24px;
+      top: 24px;
+      width: 150px;
+      height: 50px;
+      border: none;
+      border-radius: 14px;
+      background: rgba(0, 0, 0, 0.08);
+      color: #111;
+      font-size: 16px;
+      cursor: pointer;
+      z-index: 3;
+    }
+
+    @media (max-width: 640px) {
+      #loginPanel,
+      #newAccountPanel,
+      #accountCodePanel,
+      #lobbyPanel,
+      #resultPanel {
+        padding: 22px;
+        border-radius: 22px;
+      }
+
+      #lobbyTitle,
+      #resultTitle,
+      #dangerTitle,
+      #loginTitle,
+      #newAccountTitle,
+      #accountCodeTitle {
+        font-size: 28px;
+      }
+
+      .signBtn,
+      .enterBtn,
+      .backBtn,
+      .greenBtn {
+        width: 100%;
+      }
+
+      #dangerSaveBtn {
+        width: 122px;
+        height: 44px;
+        left: 16px;
+        top: 16px;
+        font-size: 14px;
+      }
     }
   </style>
 </head>
 <body>
 
   <canvas id="gameCanvas"></canvas>
+
+  <div id="loginOverlay">
+    <div id="loginPanel">
+      <div id="loginTitle">请输入你的账号代码</div>
+      <div id="loginSubtitle">输入你的账号代码后进入游戏。没有账号可以直接创建一个新账号。</div>
+
+      <textarea id="loginCodeInput" class="signTextArea" placeholder="把账号代码粘贴到这里"></textarea>
+      <div id="loginErrorText" class="signError"></div>
+
+      <div class="signRow">
+        <button id="loginEnterBtn" class="signBtn">登录</button>
+        <button id="loginCreateBtn" class="signBtn" style="background:#1f9d42;">或者创建新账号</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="newAccountOverlay">
+    <div id="newAccountPanel">
+      <div id="newAccountTitle">新账号说明</div>
+      <div id="newAccountSubtitle">一把危险地带游戏结束后，请手动点击设置，然后获取账号代码</div>
+
+      <div class="signInfoBox">
+        这个账号系统是本地代码系统。<br>
+        你可以把账号代码复制下来，换设备后再粘贴回来继续玩。<br><br>
+        进入危险地带后，左上角会有“保存游戏”按钮。点击后会生成账号代码，下面有复制按钮。
+      </div>
+
+      <div class="signRow">
+        <button id="newAccountConfirmBtn" class="signBtn" style="background:#1f9d42;">我知道了，创建新账号</button>
+        <button id="newAccountBackBtn" class="signBtn" style="background:#f1f1f1; color:#111;">返回登录</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="accountCodeOverlay">
+    <div id="accountCodePanel">
+      <div id="accountCodeTitle">账号代码</div>
+      <div id="accountCodeSubtitle">复制下面这串代码，之后在登录页粘贴即可恢复仓库和设置</div>
+
+      <textarea id="accountCodeText" class="signTextArea" readonly></textarea>
+
+      <div class="signRow">
+        <button id="copyAccountCodeBtn" class="signBtn" style="background:#1f9d42;">复制</button>
+        <button id="closeAccountCodeBtn" class="signBtn" style="background:#f1f1f1; color:#111;">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="lobbyOverlay">
+    <div id="lobbyPanel">
+      <div id="lobbyTitle">选择模式</div>
+      <div id="lobbySubtitle">先进入大厅，再选择你要玩的模式。</div>
+
+      <div id="modeGrid">
+        <div class="modeCard">
+          <div>
+            <h2>打战场模式</h2>
+            <p>
+              标准对战模式，适合直接开打。<br>
+              红队达到 250 击杀后胜利。
+            </p>
+            <div class="meta">
+              特点：正常人数、正常节奏、适合练枪和刷击杀。
+            </div>
+          </div>
+          <button id="battleEnterBtn" class="enterBtn">进入</button>
+        </div>
+
+        <div class="modeCard">
+          <div>
+            <h2>危险地带模式</h2>
+            <p>
+              搜打撤模式入口。<br>
+              先进入危险地带大厅，再打开仓库整理物资。
+            </p>
+            <div class="meta">
+              特点：大厅 + 仓库 + 后续可接撤离、搜刮、物资系统。
+            </div>
+          </div>
+          <button id="dangerEnterBtn" class="enterBtn">进入</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="dangerLobbyOverlay">
+    <div id="dangerLobbyContent">
+      <div id="dangerTopText">
+        <div class="title">危险地带大厅</div>
+        <div class="sub">
+          先整理仓库，再开始行动。<br>
+          你现在看到的是没有武器的主角。
+        </div>
+      </div>
+
+      <div id="dangerAvatarWrap">
+        <canvas id="dangerAvatarCanvas" width="220" height="260"></canvas>
+        <div id="dangerAvatarLabel">大厅角色<br>和大战场主角是同一个人</div>
+      </div>
+
+      <button id="dangerWarehouseBtn">仓库</button>
+      <button id="dangerStartBtn">开始行动</button>
+    </div>
+  </div>
+
+  <div id="warehouseOverlay">
+    <div id="warehouseLayout">
+      <div id="warehouseLeftPane">
+        <canvas id="warehouseCanvas"></canvas>
+      </div>
+
+      <div id="warehouseRightPane">
+        <div id="warehouseTabBar">
+          <div class="folderTab">仓库</div>
+        </div>
+
+        <div id="warehouseInfo">
+          <div class="card">
+            <div style="font-size:18px; font-weight:700; margin-bottom:8px;">基础物品</div>
+            <div>AK 默认横着摆，放不下时自动竖放。</div>
+            <div>图片：assets/weapon-right.png</div>
+            <div>点击后可选中并拖动。</div>
+          </div>
+
+          <div class="card">
+            <div style="font-size:18px; font-weight:700; margin-bottom:8px;">规则说明</div>
+            <div>占格子显示灰色。</div>
+            <div>拖动时合法预览显示绿色，非法显示红色。</div>
+            <div>拖出矩阵或放不下会自动回到原位。</div>
+          </div>
+        </div>
+
+        <button id="warehouseBackBtn">返回大厅</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="resultOverlay">
+    <div id="resultPanel">
+      <div id="resultTitle">结果</div>
+      <div id="resultSubtitle">...</div>
+      <button id="returnLobbyBtn" class="backBtn">返回大厅</button>
+    </div>
+  </div>
 
   <button id="gearBtn" aria-label="设置">⚙</button>
 
@@ -156,7 +769,7 @@
 
     <div style="font-size:13px; line-height:1.5; opacity:0.85;">
       勾选后会显示左下角摇杆、右下角开火和换弹按钮。<br>
-      另外我加了一个透明跳跃键，不然手机版没法跳。
+      这里也保留了一个透明跳跃按钮。
     </div>
 
     <button id="closeSettingsBtn">退出设置</button>
@@ -172,17 +785,11 @@
     <button id="fireBtn" class="mobileBtn">开火</button>
   </div>
 
-  <div id="hud" style="position:fixed; left:0; top:0; width:100%; height:100%; pointer-events:none;">
-    <div id="killFeed" style="position:absolute; top:10px; left:50%; transform:translateX(-50%); padding:6px 12px; background:rgba(0,0,0,0.55); color:#fff; font-size:16px; pointer-events:auto; cursor:pointer;">
-      击杀提示（点击查看排行榜）
-    </div>
-
-    <div id="ammoHud" style="position:absolute; top:10px; right:10px; padding:6px 12px; background:rgba(0,0,0,0.55); color:#fff; font-size:16px;">
-      30/30
-    </div>
-
-    <div id="scoreboard" style="position:absolute; top:52px; left:50%; transform:translateX(-50%); min-width:240px; padding:12px 16px; background:rgba(255,255,255,0.92); color:#000; font-size:16px; display:none; pointer-events:auto;">
-    </div>
+  <div id="hud">
+    <div id="playerKillToast"></div>
+    <div id="killFeed">击杀提示（点击查看排行榜）</div>
+    <div id="ammoHud">30/30</div>
+    <div id="scoreboard"></div>
   </div>
 
   <script src="map1.js"></script>
@@ -190,6 +797,8 @@
   <script src="weapon.js"></script>
   <script src="bot.js"></script>
   <script src="player.js"></script>
+  <script src="cangku.js"></script>
+  <script src="sign.js"></script>
   <script src="main.js"></script>
 </body>
 </html>

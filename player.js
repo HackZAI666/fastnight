@@ -119,7 +119,7 @@ class Player {
     if (this.vx > this.moveSpeed) this.vx = this.moveSpeed;
     if (this.vx < -this.moveSpeed) this.vx = -this.moveSpeed;
 
-    if (input.jumpPressed && this.onGround) {
+if (input.jumpPressed && this.onGround) {
   this.vy = -this.jumpPower;
   this.onGround = false;
   input.jumpPressed = false;

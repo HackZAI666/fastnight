@@ -17,7 +17,6 @@ class Weapon {
     this.bulletSpeed = options.bulletSpeed ?? 1600;
     this.muzzleDistance = 84;
 
-    // 后坐力：21 发到 75°，停火后 0.7 秒内快速恢复
     this.recoilAngle = 0;
     this.recoilMaxAngle = 75 * Math.PI / 180;
     this.recoilPerShot = this.recoilMaxAngle / 21;
@@ -25,10 +24,12 @@ class Weapon {
     this.recoilRecoverTime = 0.7;
     this.timeSinceShot = 999;
 
+    this.recoilBulletInfluence = options.recoilBulletInfluence ?? 0.82;
+    this.recoilRandomSpread = options.recoilRandomSpread ?? 0.06;
+
     this.muzzleFlashTime = 0;
     this.muzzleFlashDuration = 0.06;
 
-    // 两张图分别加载
     this.imageRight = new Image();
     this.imageLeft = new Image();
 
@@ -127,11 +128,11 @@ class Weapon {
 
     const aimAngle = Math.atan2(dy, dx);
 
-    // 右边往上跳：减后坐力
-    // 左边往上跳：加后坐力
-    const shotAngle = facingRight
-      ? aimAngle - this.recoilAngle
-      : aimAngle + this.recoilAngle;
+    const recoilDirection = facingRight ? -1 : 1;
+    const recoilDrivenKick = this.recoilAngle * this.recoilBulletInfluence;
+    const randomSpread = (Math.random() - 0.5) * this.recoilRandomSpread * (1 + this.recoilAngle / this.recoilMaxAngle);
+
+    const shotAngle = aimAngle + (recoilDirection * recoilDrivenKick) + randomSpread;
 
     const muzzleX = gripX + Math.cos(shotAngle) * this.muzzleDistance;
     const muzzleY = gripY + Math.sin(shotAngle) * this.muzzleDistance;
@@ -181,12 +182,7 @@ class Weapon {
 
   _drawWeapon(ctx, gripX, gripY, rotation, facingRight = true) {
     const sprite = facingRight ? this.spriteRight : this.spriteLeft;
-
-    // 左枪图本身就是镜像图，所以旋转时补一个 PI
-    // 这样左边不会“倒过来”
     const drawRotation = facingRight ? rotation : rotation + Math.PI;
-
-    // 这里是握把位置。左图和右图的握把位置要镜像
     const drawX = facingRight ? -22 : -(this.width - 22);
 
     ctx.save();
@@ -196,7 +192,6 @@ class Weapon {
     if (sprite) {
       ctx.drawImage(sprite, drawX, -this.height / 2, this.width, this.height);
     } else {
-      // 资源还没加载完时的备用方块
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(drawX, -this.height / 2, this.width, this.height);
       ctx.strokeStyle = "#000000";
@@ -268,8 +263,8 @@ class Weapon {
     const aimAngle = Math.atan2(dy, dx);
 
     const displayAngle = facingRight
-      ? aimAngle - this.recoilAngle
-      : aimAngle + this.recoilAngle;
+      ? aimAngle - this.recoilAngle * this.recoilBulletInfluence
+      : aimAngle + this.recoilAngle * this.recoilBulletInfluence;
 
     this._drawWeapon(ctx, gripX, gripY, displayAngle, facingRight);
     this._drawMuzzleFlash(ctx, gripX, gripY, displayAngle);
@@ -291,12 +286,10 @@ class Weapon {
       return;
     }
 
-    // facingRight = true -> 0
-    // facingRight = false -> PI
     const baseAngle = facingRight ? 0 : Math.PI;
     const displayAngle = facingRight
-      ? baseAngle - this.recoilAngle
-      : baseAngle + this.recoilAngle;
+      ? baseAngle - this.recoilAngle * this.recoilBulletInfluence
+      : baseAngle + this.recoilAngle * this.recoilBulletInfluence;
 
     this._drawWeapon(ctx, gripX, gripY, displayAngle, facingRight);
     this._drawMuzzleFlash(ctx, gripX, gripY, displayAngle);

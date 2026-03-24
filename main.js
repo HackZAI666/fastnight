@@ -1,14 +1,37 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
+const hudEl = document.getElementById("hud");
 const killFeedEl = document.getElementById("killFeed");
 const scoreboardEl = document.getElementById("scoreboard");
 const ammoHudEl = document.getElementById("ammoHud");
+const playerKillToastEl = document.getElementById("playerKillToast");
 
 const gearBtn = document.getElementById("gearBtn");
 const settingsPanel = document.getElementById("settingsPanel");
 const closeSettingsBtn = document.getElementById("closeSettingsBtn");
 const mobileModeCheckbox = document.getElementById("mobileModeCheckbox");
+
+const lobbyOverlay = document.getElementById("lobbyOverlay");
+const battleEnterBtn = document.getElementById("battleEnterBtn");
+const dangerEnterBtn = document.getElementById("dangerEnterBtn");
+
+const dangerLobbyOverlay = document.getElementById("dangerLobbyOverlay");
+const dangerWarehouseBtn = document.getElementById("dangerWarehouseBtn");
+const dangerStartBtn = document.getElementById("dangerStartBtn");
+
+const dangerAvatarCanvas = document.getElementById("dangerAvatarCanvas");
+const dangerAvatarCtx = dangerAvatarCanvas.getContext("2d");
+
+const warehouseOverlay = document.getElementById("warehouseOverlay");
+const warehouseCanvas = document.getElementById("warehouseCanvas");
+const warehouseLeftPane = document.getElementById("warehouseLeftPane");
+const warehouseBackBtn = document.getElementById("warehouseBackBtn");
+
+const resultOverlay = document.getElementById("resultOverlay");
+const resultTitleEl = document.getElementById("resultTitle");
+const resultSubtitleEl = document.getElementById("resultSubtitle");
+const returnLobbyBtn = document.getElementById("returnLobbyBtn");
 
 const mobileControls = document.getElementById("mobileControls");
 const joystick = document.getElementById("joystick");
@@ -20,6 +43,11 @@ const jumpBtn = document.getElementById("jumpBtn");
 let player = null;
 let cameraX = 0;
 let lastTime = 0;
+
+let currentMode = null;
+let gameState = "login";
+let resultNextState = "modeSelect";
+let currentAccountId = "";
 
 const input = {
   left: false,
@@ -48,7 +76,13 @@ let joystickActive = false;
 let joystickPointerId = null;
 let joystickCenterX = 0;
 let joystickCenterY = 0;
-const joystickRadius = 48;
+const joystickRadius = 62;
+
+let mobileAimVecX = 1;
+let mobileAimVecY = 0;
+
+let playerKillToastTimer = 0;
+let resultReturnTimer = 0;
 
 function resizeCanvas() {
   canvas.width = window.innerWidth;
@@ -77,7 +111,187 @@ function escapeHtml(text) {
     .replaceAll("'", "&#39;");
 }
 
+function getModeConfig(mode) {
+  if (mode === "danger") {
+    return {
+      allyCount: 14,
+      enemyCount: 14,
+      spacing: 110,
+      botBoost: 35,
+      fireInterval: 0.16,
+      reloadDuration: 3.2,
+      forceAggressive: true,
+      hasWinCondition: false
+    };
+  }
+
+  return {
+    allyCount: 20,
+    enemyCount: 20,
+    spacing: 85,
+    botBoost: 0,
+    fireInterval: 0.2,
+    reloadDuration: 4,
+    forceAggressive: false,
+    hasWinCondition: true
+  };
+}
+
+function syncUi() {
+  hudEl.style.display = gameState === "playing" ? "block" : "none";
+  mobileControls.style.display = (mobileModeEnabled && gameState === "playing") ? "block" : "none";
+
+  const showGear = gameState === "playing" || gameState === "dangerLobby" || gameState === "warehouse";
+  gearBtn.style.display = showGear ? "block" : "none";
+
+  if (!showGear) {
+    settingsOpen = false;
+    settingsPanel.style.display = "none";
+  }
+
+  if (gameState !== "playing") {
+    input.left = false;
+    input.right = false;
+    input.jumpPressed = false;
+    input.mouseDown = false;
+    resetJoystick();
+  }
+}
+
+function hideAllLayers() {
+  lobbyOverlay.style.display = "none";
+  dangerLobbyOverlay.style.display = "none";
+  warehouseOverlay.style.display = "none";
+  resultOverlay.style.display = "none";
+
+  const loginOverlay = document.getElementById("loginOverlay");
+  const newAccountOverlay = document.getElementById("newAccountOverlay");
+  const accountCodeOverlay = document.getElementById("accountCodeOverlay");
+
+  if (loginOverlay) loginOverlay.style.display = "none";
+  if (newAccountOverlay) newAccountOverlay.style.display = "none";
+  if (accountCodeOverlay) accountCodeOverlay.style.display = "none";
+}
+
+function hideScoreboardAndToast() {
+  scoreboardVisible = false;
+  scoreboardEl.style.display = "none";
+  playerKillToastEl.style.display = "none";
+  playerKillToastTimer = 0;
+}
+
+function showLoginScreen() {
+  hideAllLayers();
+  gameState = "login";
+  currentMode = null;
+  window.__currentMode = null;
+  hideScoreboardAndToast();
+
+  if (window.cangkuSystem) window.cangkuSystem.hide();
+  settingsOpen = false;
+  settingsPanel.style.display = "none";
+  syncUi();
+
+  if (window.SignSystem && typeof window.SignSystem.showLogin === "function") {
+    window.SignSystem.showLogin();
+  }
+}
+
+function showModeSelect() {
+  hideAllLayers();
+  lobbyOverlay.style.display = "flex";
+  gameState = "modeSelect";
+  currentMode = null;
+  window.__currentMode = null;
+  hideScoreboardAndToast();
+
+  if (window.cangkuSystem) window.cangkuSystem.hide();
+  syncUi();
+}
+
+function drawDangerLobbyAvatar() {
+  const ctx2 = dangerAvatarCtx;
+  const w = dangerAvatarCanvas.width;
+  const h = dangerAvatarCanvas.height;
+
+  ctx2.clearRect(0, 0, w, h);
+  ctx2.fillStyle = "#ffffff";
+  ctx2.fillRect(0, 0, w, h);
+
+  const bodyW = 68;
+  const bodyH = 102;
+  const x = Math.round((w - bodyW) / 2);
+  const y = 34;
+
+  ctx2.fillStyle = "#111111";
+  ctx2.fillRect(x, y, bodyW, bodyH);
+
+  ctx2.strokeStyle = "#000000";
+  ctx2.lineWidth = 2;
+  ctx2.strokeRect(x, y, bodyW, bodyH);
+
+  ctx2.fillStyle = "#444444";
+  ctx2.fillRect(x + 6, y + 6, bodyW - 12, 14);
+
+  ctx2.save();
+  ctx2.fillStyle = "#444444";
+  ctx2.font = "14px Arial";
+  ctx2.textAlign = "center";
+  ctx2.fillText("大厅角色", w / 2, h - 28);
+  ctx2.restore();
+}
+
+function resizeWarehouseCanvas() {
+  if (!warehouseCanvas || !warehouseLeftPane) return;
+  const rect = warehouseLeftPane.getBoundingClientRect();
+  warehouseCanvas.width = Math.max(1, Math.floor(rect.width));
+  warehouseCanvas.height = Math.max(1, Math.floor(rect.height));
+}
+
+function showDangerLobby() {
+  hideAllLayers();
+  dangerLobbyOverlay.style.display = "flex";
+  gameState = "dangerLobby";
+  currentMode = "danger";
+  window.__currentMode = null;
+  hideScoreboardAndToast();
+
+  if (window.cangkuSystem) window.cangkuSystem.hide();
+  syncUi();
+  requestAnimationFrame(drawDangerLobbyAvatar);
+}
+
+function showWarehouse() {
+  hideAllLayers();
+  warehouseOverlay.style.display = "flex";
+  gameState = "warehouse";
+  window.__currentMode = null;
+  hideScoreboardAndToast();
+  syncUi();
+
+  requestAnimationFrame(() => {
+    if (window.cangkuSystem) {
+      window.cangkuSystem.resize();
+      window.cangkuSystem.show();
+    } else {
+      resizeWarehouseCanvas();
+    }
+  });
+}
+
+function showResult(title, subtitle) {
+  hideAllLayers();
+  resultOverlay.style.display = "flex";
+  resultTitleEl.textContent = title;
+  resultSubtitleEl.textContent = subtitle;
+  gameState = "result";
+  window.__currentMode = null;
+  hideScoreboardAndToast();
+  syncUi();
+}
+
 function updateCamera() {
+  if (!player) return;
   cameraX = player.x + player.w / 2 - canvas.width / 2;
   cameraX = clamp(cameraX, 0, Math.max(0, WORLD.width - canvas.width));
 }
@@ -93,16 +307,52 @@ function getLeaderboardEntries() {
     });
 }
 
+function renderKillFeedEntry(item) {
+  if (item.isPlayerKill) {
+    return `
+      <div style="padding:4px 8px; border-radius:10px; background:rgba(255,245,140,0.95); color:#111; box-shadow:0 0 14px rgba(255,240,120,0.45); font-weight:700;">
+        你击杀了 <span style="color:#000;">${escapeHtml(item.victimName)}</span>
+      </div>
+    `;
+  }
+
+  return `
+    <span style="color:${teamColor(item.killerTeam)}">${escapeHtml(item.killerName)}</span>
+    击杀
+    <span style="color:${teamColor(item.victimTeam)}">${escapeHtml(item.victimName)}</span>
+  `;
+}
+
 function updateHUD() {
+  if (gameState !== "playing") {
+    hudEl.style.display = "none";
+    scoreboardEl.style.display = "none";
+    return;
+  }
+
+  hudEl.style.display = "block";
+
   if (killFeed.length > 0) {
     const latest = killFeed[0];
-    killFeedEl.innerHTML = `
-      <span style="color:${teamColor(latest.killerTeam)}">${escapeHtml(latest.killerName)}</span>
-      击杀
-      <span style="color:${teamColor(latest.victimTeam)}">${escapeHtml(latest.victimName)}</span>
-    `;
+    killFeedEl.innerHTML = renderKillFeedEntry(latest);
+
+    if (latest.isPlayerKill) {
+      killFeedEl.style.background = "transparent";
+      killFeedEl.style.color = "#111";
+      killFeedEl.style.border = "1px solid rgba(255,245,140,0.8)";
+      killFeedEl.style.boxShadow = "0 0 16px rgba(255,240,120,0.30)";
+    } else {
+      killFeedEl.style.background = "rgba(0, 0, 0, 0.55)";
+      killFeedEl.style.color = "#fff";
+      killFeedEl.style.border = "none";
+      killFeedEl.style.boxShadow = "none";
+    }
   } else {
     killFeedEl.textContent = "击杀提示（点击查看排行榜）";
+    killFeedEl.style.background = "rgba(0, 0, 0, 0.55)";
+    killFeedEl.style.color = "#fff";
+    killFeedEl.style.border = "none";
+    killFeedEl.style.boxShadow = "none";
   }
 
   if (player) {
@@ -110,6 +360,8 @@ function updateHUD() {
       player.weapon.ammo > 0
         ? `${player.weapon.ammo}/${player.weapon.magSize}`
         : "无子弹";
+  } else {
+    ammoHudEl.textContent = "30/30";
   }
 
   if (!scoreboardVisible) {
@@ -166,30 +418,121 @@ function updateHUD() {
 }
 
 function toggleScoreboard() {
+  if (gameState !== "playing") return;
   scoreboardVisible = !scoreboardVisible;
   updateHUD();
 }
 
 killFeedEl.addEventListener("click", toggleScoreboard);
 
+function showPlayerKillToast(victimName) {
+  playerKillToastEl.textContent = `你击杀了 ${victimName}`;
+  playerKillToastEl.style.display = "block";
+  playerKillToastTimer = 1.6;
+}
+
+function clearInputs() {
+  input.left = false;
+  input.right = false;
+  input.jumpPressed = false;
+  input.mouseDown = false;
+  resetJoystick();
+}
+
+function resetMatchState() {
+  player = null;
+  bots = [];
+  bullets = [];
+  killFeed = [];
+  redKills = 0;
+  blueKills = 0;
+  scoreboardVisible = false;
+  playerKillToastTimer = 0;
+  playerKillToastEl.style.display = "none";
+  updateHUD();
+}
+
+function endBattle(isWin) {
+  if (gameState !== "playing") return;
+
+  gameState = "result";
+  settingsOpen = false;
+  settingsPanel.style.display = "none";
+  scoreboardVisible = false;
+  updateHUD();
+
+  resultNextState = "modeSelect";
+  showResult(
+    isWin ? "胜利" : "失败",
+    isWin
+      ? "红队先达到 250 击杀，战斗结束。"
+      : "蓝队先达到 250 击杀，战斗结束。"
+  );
+
+  resultReturnTimer = 2.2;
+  clearInputs();
+}
+
+function endDangerRaid() {
+  if (gameState !== "playing") return;
+
+  gameState = "result";
+  settingsOpen = false;
+  settingsPanel.style.display = "none";
+  scoreboardVisible = false;
+  updateHUD();
+
+  resultNextState = "dangerLobby";
+  showResult("失败", "你在危险地带中倒下了。");
+
+  resultReturnTimer = 2.2;
+  clearInputs();
+}
+
+function returnFromResult() {
+  if (resultNextState === "dangerLobby") {
+    showDangerLobby();
+    return;
+  }
+  showModeSelect();
+}
+
 function registerKill(killer, victim) {
   if (!killer || !victim) return;
 
   killer.kills = (killer.kills || 0) + 1;
 
-  if (killer.team === "ally") redKills += 1;
-  if (killer.team === "enemy") blueKills += 1;
+  const killerTeam = killer.team;
+  const victimTeam = victim.team;
+
+  if (killerTeam === "ally") redKills += 1;
+  if (killerTeam === "enemy") blueKills += 1;
+
+  const isPlayerKill = killer === player;
 
   killFeed.unshift({
     killerName: killer.name || teamName(killer.team),
-    killerTeam: killer.team,
+    killerTeam,
     victimName: victim.name || teamName(victim.team),
-    victimTeam: victim.team
+    victimTeam,
+    isPlayerKill
   });
 
   if (killFeed.length > 6) killFeed.pop();
 
+  if (isPlayerKill) {
+    showPlayerKillToast(victim.name || teamName(victim.team));
+  }
+
   updateHUD();
+
+  if (currentMode === "battle") {
+    if (redKills >= 250) {
+      endBattle(true);
+    } else if (blueKills >= 250) {
+      endBattle(false);
+    }
+  }
 }
 
 function drawHealthBar(ctx, x, y, w, health, maxHealth) {
@@ -230,16 +573,33 @@ function buildBotName(team, index) {
 function createBots() {
   bots = [];
 
+  const mode = getModeConfig(currentMode);
   const groundY = getGroundY(canvas.height);
   const botY = groundY - 102;
-  const spacing = 85;
+  const spacing = mode.spacing;
 
-  for (let i = 0; i < 20; i++) {
-    bots.push(new Bot(40 + i * spacing, botY, "ally", buildBotName("ally", i + 1)));
+  for (let i = 0; i < mode.allyCount; i++) {
+    const bot = new Bot(40 + i * spacing, botY, "ally", buildBotName("ally", i + 1));
+    if (mode.forceAggressive) {
+      bot.brainType = "aggressive";
+      bot.moveSpeed += mode.botBoost;
+      bot.accel += mode.botBoost * 8;
+      bot.weapon.fireInterval = mode.fireInterval;
+      bot.weapon.reloadDuration = mode.reloadDuration;
+    }
+    bots.push(bot);
   }
 
-  for (let i = 0; i < 20; i++) {
-    bots.push(new Bot(WORLD.width - 40 - 68 - i * spacing, botY, "enemy", buildBotName("enemy", i + 1)));
+  for (let i = 0; i < mode.enemyCount; i++) {
+    const bot = new Bot(WORLD.width - 40 - 68 - i * spacing, botY, "enemy", buildBotName("enemy", i + 1));
+    if (mode.forceAggressive) {
+      bot.brainType = "aggressive";
+      bot.moveSpeed += mode.botBoost;
+      bot.accel += mode.botBoost * 8;
+      bot.weapon.fireInterval = mode.fireInterval;
+      bot.weapon.reloadDuration = mode.reloadDuration;
+    }
+    bots.push(bot);
   }
 }
 
@@ -296,8 +656,41 @@ function handleBulletHits() {
   }
 }
 
-function update(dt) {
+function updatePlayerKillToast(dt) {
+  if (playerKillToastTimer > 0) {
+    playerKillToastTimer -= dt;
+    if (playerKillToastTimer <= 0) {
+      playerKillToastTimer = 0;
+      playerKillToastEl.style.display = "none";
+    }
+  }
+}
+
+function syncMobileAimToPlayer() {
+  if (!player) return;
+
+  const playerScreenX = player.x - cameraX + player.w / 2;
+  const playerScreenY = player.y + player.h / 2;
+  const aimDistance = 190;
+
+  mouseX = clamp(playerScreenX + mobileAimVecX * aimDistance, 0, canvas.width);
+  mouseY = clamp(playerScreenY + mobileAimVecY * aimDistance, 0, canvas.height);
+}
+
+function updatePlaying(dt) {
+  if (!player) return;
+
   player.update(dt, input, canvas.height);
+  updateCamera();
+
+  if (mobileModeEnabled) {
+    syncMobileAimToPlayer();
+  }
+
+  if (currentMode === "danger" && player.dead) {
+    endDangerRaid();
+    return;
+  }
 
   if (input.mouseDown && !player.dead) {
     const aimWorldX = mouseX + cameraX;
@@ -322,11 +715,13 @@ function update(dt) {
 
   updateBullets(dt);
   handleBulletHits();
-  updateCamera();
   updateHUD();
+  updatePlayerKillToast(dt);
 }
 
-function draw() {
+function drawBattle() {
+  if (!player) return;
+
   drawMap1(ctx, canvas, cameraX);
 
   for (const bot of bots) {
@@ -340,22 +735,10 @@ function draw() {
   }
 }
 
-function loop(time) {
-  if (!lastTime) lastTime = time;
-  const dt = Math.min((time - lastTime) / 1000, 0.033);
-  lastTime = time;
-
-  update(dt);
-  draw();
-
-  requestAnimationFrame(loop);
-}
-
 function saveMobileMode(enabled) {
   try {
     localStorage.setItem(MOBILE_MODE_STORAGE_KEY, enabled ? "1" : "0");
   } catch (e) {
-    // 不影响游戏
   }
 }
 
@@ -365,7 +748,6 @@ function loadMobileMode() {
     if (saved === "1") return true;
     if (saved === "0") return false;
   } catch (e) {
-    // 不影响游戏
   }
 
   const touchDevice =
@@ -382,7 +764,7 @@ function setSettingsOpen(open) {
 }
 
 function updateMobileControlsVisibility() {
-  mobileControls.style.display = mobileModeEnabled ? "block" : "none";
+  mobileControls.style.display = (mobileModeEnabled && gameState === "playing") ? "block" : "none";
 }
 
 function applyMobileMode(enabled) {
@@ -437,20 +819,178 @@ function updateJoystickFromPoint(clientX, clientY) {
   const deadZone = 12;
   input.left = useX < -deadZone;
   input.right = useX > deadZone;
+
+  const mag = Math.hypot(useX, useY);
+  if (mag > 4) {
+    mobileAimVecX = useX / mag;
+    mobileAimVecY = useY / mag;
+  }
 }
 
-function startGame() {
+function getDefaultWarehouseData() {
+  if (window.cangkuSystem && typeof window.cangkuSystem.getDefaultSaveData === "function") {
+    try {
+      return window.cangkuSystem.getDefaultSaveData();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  return {
+    version: 1,
+    items: [
+      {
+        id: "ak",
+        name: "AK",
+        imageSrc: "assets/weapon-right.png",
+        gridX: 0,
+        gridY: 0,
+        orientation: "horizontal"
+      }
+    ]
+  };
+}
+
+function getCurrentWarehouseData() {
+  if (window.cangkuSystem && typeof window.cangkuSystem.getSaveData === "function") {
+    try {
+      return window.cangkuSystem.getSaveData();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  return getDefaultWarehouseData();
+}
+
+function createAccountId() {
+  if (window.crypto && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return `acc_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+}
+
+function buildDefaultAccountSnapshot() {
+  currentAccountId = createAccountId();
+
+  return {
+    version: 1,
+    accountId: currentAccountId,
+    accountName: "新账号",
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    settings: {
+      mobileModeEnabled: mobileModeEnabled
+    },
+    warehouse: getDefaultWarehouseData()
+  };
+}
+
+function buildAccountSnapshot() {
+  if (!currentAccountId) {
+    currentAccountId = createAccountId();
+  }
+
+  return {
+    version: 1,
+    accountId: currentAccountId,
+    accountName: "危险地带账号",
+    updatedAt: Date.now(),
+    settings: {
+      mobileModeEnabled: mobileModeEnabled
+    },
+    warehouse: getCurrentWarehouseData(),
+    playerState: player ? {
+      x: player.x,
+      y: player.y,
+      health: player.health,
+      ammo: player.weapon ? player.weapon.ammo : 0,
+      magSize: player.weapon ? player.weapon.magSize : 30
+    } : null
+  };
+}
+
+function applyAccountSnapshot(snapshot) {
+  if (!snapshot || typeof snapshot !== "object") return false;
+
+  currentAccountId = snapshot.accountId || currentAccountId || createAccountId();
+
+  if (snapshot.settings && typeof snapshot.settings.mobileModeEnabled === "boolean") {
+    applyMobileMode(snapshot.settings.mobileModeEnabled);
+  }
+
+  if (snapshot.warehouse && window.cangkuSystem && typeof window.cangkuSystem.loadSaveData === "function") {
+    window.cangkuSystem.loadSaveData(snapshot.warehouse);
+  } else if (window.cangkuSystem && typeof window.cangkuSystem.loadSaveData === "function") {
+    window.cangkuSystem.loadSaveData(getDefaultWarehouseData());
+  }
+
+  return true;
+}
+
+function startBattle() {
+  currentMode = "battle";
+  window.__currentMode = "battle";
+  gameState = "playing";
+  hideAllLayers();
+  settingsOpen = false;
+  settingsPanel.style.display = "none";
+  hideScoreboardAndToast();
+  resetMatchState();
   resizeCanvas();
 
   player = new Player(300, getGroundY(canvas.height) - 102);
   createBots();
-
+  updateCamera();
+  if (mobileModeEnabled) syncMobileAimToPlayer();
   updateHUD();
-  lastTime = 0;
 
-  requestAnimationFrame(updateJoystickCenter);
-  requestAnimationFrame(loop);
+  lastTime = 0;
+  syncUi();
 }
+
+function startDangerRaid() {
+  currentMode = "danger";
+  window.__currentMode = "danger";
+  gameState = "playing";
+  hideAllLayers();
+  settingsOpen = false;
+  settingsPanel.style.display = "none";
+  hideScoreboardAndToast();
+  resetMatchState();
+  resizeCanvas();
+
+  player = new Player(300, getGroundY(canvas.height) - 102);
+  createBots();
+  updateCamera();
+  if (mobileModeEnabled) syncMobileAimToPlayer();
+  updateHUD();
+
+  lastTime = 0;
+  syncUi();
+}
+
+battleEnterBtn.addEventListener("click", startBattle);
+
+dangerEnterBtn.addEventListener("click", () => {
+  showDangerLobby();
+});
+
+dangerWarehouseBtn.addEventListener("click", () => {
+  showWarehouse();
+});
+
+dangerStartBtn.addEventListener("click", () => {
+  startDangerRaid();
+});
+
+warehouseBackBtn.addEventListener("click", () => {
+  showDangerLobby();
+});
+
+returnLobbyBtn.addEventListener("click", () => {
+  returnFromResult();
+});
 
 gearBtn.addEventListener("click", () => {
   setSettingsOpen(!settingsOpen);
@@ -466,7 +1006,7 @@ mobileModeCheckbox.addEventListener("change", () => {
 });
 
 joystick.addEventListener("pointerdown", (e) => {
-  if (!mobileModeEnabled) return;
+  if (!mobileModeEnabled || gameState !== "playing") return;
 
   e.preventDefault();
   joystickActive = true;
@@ -499,9 +1039,10 @@ window.addEventListener("pointercancel", (e) => {
 });
 
 fireBtn.addEventListener("pointerdown", (e) => {
-  if (!mobileModeEnabled) return;
+  if (!mobileModeEnabled || gameState !== "playing") return;
   e.preventDefault();
   input.mouseDown = true;
+
   if (fireBtn.setPointerCapture) {
     fireBtn.setPointerCapture(e.pointerId);
   }
@@ -520,7 +1061,7 @@ fireBtn.addEventListener("lostpointercapture", () => {
 });
 
 reloadBtn.addEventListener("pointerdown", (e) => {
-  if (!mobileModeEnabled) return;
+  if (!mobileModeEnabled || gameState !== "playing") return;
   e.preventDefault();
 
   if (player) {
@@ -533,7 +1074,7 @@ reloadBtn.addEventListener("pointerdown", (e) => {
 });
 
 jumpBtn.addEventListener("pointerdown", (e) => {
-  if (!mobileModeEnabled) return;
+  if (!mobileModeEnabled || gameState !== "playing") return;
   e.preventDefault();
   input.jumpPressed = true;
 
@@ -543,14 +1084,14 @@ jumpBtn.addEventListener("pointerdown", (e) => {
 });
 
 canvas.addEventListener("pointerdown", (e) => {
-  if (e.pointerType === "touch" || e.pointerType === "pen") {
+  if (!mobileModeEnabled && (e.pointerType === "touch" || e.pointerType === "pen")) {
     mouseX = e.clientX;
     mouseY = e.clientY;
   }
 });
 
 canvas.addEventListener("pointermove", (e) => {
-  if (e.pointerType === "touch" || e.pointerType === "pen") {
+  if (!mobileModeEnabled && (e.pointerType === "touch" || e.pointerType === "pen")) {
     mouseX = e.clientX;
     mouseY = e.clientY;
   }
@@ -558,6 +1099,18 @@ canvas.addEventListener("pointermove", (e) => {
 
 window.addEventListener("resize", () => {
   resizeCanvas();
+
+  if (gameState === "warehouse") {
+    if (window.cangkuSystem) {
+      window.cangkuSystem.resize();
+      window.cangkuSystem.draw();
+    }
+  }
+
+  if (gameState === "dangerLobby") {
+    requestAnimationFrame(drawDangerLobbyAvatar);
+  }
+
   updateJoystickCenter();
 
   if (player) {
@@ -565,18 +1118,25 @@ window.addEventListener("resize", () => {
     player.y = player.spawnY;
     createBots();
     updateCamera();
-    draw();
-    updateHUD();
+
+    if (mobileModeEnabled) syncMobileAimToPlayer();
+
+    if (gameState === "playing") {
+      drawBattle();
+      updateHUD();
+    }
   }
 });
 
 window.addEventListener("mousemove", (e) => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
+  if (!mobileModeEnabled) {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  }
 });
 
 window.addEventListener("mousedown", (e) => {
-  if (e.button === 0) {
+  if (e.button === 0 && gameState === "playing") {
     input.mouseDown = true;
   }
 });
@@ -588,6 +1148,8 @@ window.addEventListener("mouseup", (e) => {
 });
 
 window.addEventListener("keydown", (e) => {
+  if (gameState !== "playing") return;
+
   if (e.key === "a" || e.key === "A") input.left = true;
   if (e.key === "d" || e.key === "D") input.right = true;
 
@@ -607,14 +1169,6 @@ window.addEventListener("keyup", (e) => {
   if (e.key === "d" || e.key === "D") input.right = false;
 });
 
-function clearInputs() {
-  input.left = false;
-  input.right = false;
-  input.jumpPressed = false;
-  input.mouseDown = false;
-  resetJoystick();
-}
-
 window.addEventListener("blur", clearInputs);
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) clearInputs();
@@ -624,11 +1178,50 @@ window.addEventListener("contextmenu", (e) => {
   e.preventDefault();
 });
 
+function loop(time) {
+  if (!lastTime) lastTime = time;
+  const dt = Math.min((time - lastTime) / 1000, 0.033);
+  lastTime = time;
+
+  if (gameState === "playing") {
+    updatePlaying(dt);
+    drawBattle();
+  } else if (gameState === "warehouse") {
+    if (window.cangkuSystem) {
+      window.cangkuSystem.draw();
+    }
+  } else if (gameState === "result") {
+    resultReturnTimer -= dt;
+    if (resultReturnTimer <= 0) {
+      returnFromResult();
+    }
+  } else if (gameState === "dangerLobby") {
+    drawDangerLobbyAvatar();
+  }
+
+  requestAnimationFrame(loop);
+}
+
 window.addEventListener("load", () => {
   resizeCanvas();
   mobileModeEnabled = loadMobileMode();
   mobileModeCheckbox.checked = mobileModeEnabled;
   updateMobileControlsVisibility();
   updateJoystickCenter();
-  startGame();
+
+  if (window.SignSystem && typeof window.SignSystem.init === "function") {
+    window.SignSystem.init({
+      buildSnapshot: buildAccountSnapshot,
+      buildDefaultSnapshot: buildDefaultAccountSnapshot,
+      applySnapshot: applyAccountSnapshot,
+      onAuthenticated: () => {
+        showModeSelect();
+      }
+    });
+  }
+
+  showLoginScreen();
+  updateHUD();
+  drawDangerLobbyAvatar();
+  requestAnimationFrame(loop);
 });
